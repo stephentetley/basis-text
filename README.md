@@ -1,6 +1,6 @@
 # interop-text
 
-Flix wrappers over Java text libraries - just Collator so far.
+Flix wrappers over Java text libraries split off from Flix-Sandbox.
 
 Experimental.
 
