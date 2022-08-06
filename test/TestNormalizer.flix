@@ -26,7 +26,7 @@ def normalize01(): Bool =
     use Interop/Text/Normalizer.NormalizerForm.{Nfd};
     use Interop/Text/Normalizer.{normalize};
     use String.{replaceMatches};
-    let s1 = normalize(Nfd, "César");
+    let s1 = normalize(Nfd, "César") |> Result.getWithDefault("");
     // Remove combining marks...
     replaceMatches(regex = "\\p{M}", to = "", s1) == "Cesar"
 

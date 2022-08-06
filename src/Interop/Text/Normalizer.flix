@@ -15,6 +15,8 @@
  */
 
 
+// java.text.Normalizer is a utility class (only has static methods)
+
 namespace Interop/Text/Normalizer {
 
     ///
@@ -51,28 +53,28 @@ namespace Interop/Text/Normalizer {
 
     /// Warning - is this reference equality or value equality?
     def primEquals(x: ##java.text.Normalizer$Form, y: ##java.text.Normalizer$Form): Bool =
-        import java.lang.Object.equals(##java.lang.Object): Bool & Pure;
-        let x1 = x as ##java.lang.Object;
-        let y1 = y as ##java.lang.Object;
-        equals(x1, y1)
+        import java.lang.Enum.equals(##java.lang.Object): Bool & Pure;
+        equals(x as ##java.lang.Enum, y as ##java.lang.Object)
 
-
-    pub def normalize(nform: NormalizerForm, src: String): String =
+    pub def normalize(nform: NormalizerForm, src: String): Result[String, String] =
         import static java.text.Normalizer.normalize(##java.lang.CharSequence, ##java.text.Normalizer$Form): String & Pure;
         try {
             let nform1 = marshal(nform);
-            normalize(src as ##java.lang.CharSequence, nform1)
+            normalize(src as ##java.lang.CharSequence, nform1) |> Ok
         } catch {
-            case _:##java.lang.Exception => ""
+            case ex: ##java.lang.Exception =>
+                import java.lang.Throwable.getMessage(): String & Pure;
+                Err(getMessage(ex))
         }
 
-    pub def isNormalized(nform: NormalizerForm, src: String): Bool =
+    pub def isNormalized(nform: NormalizerForm, src: String): Result[Bool, String] =
         import static java.text.Normalizer.isNormalized(##java.lang.CharSequence, ##java.text.Normalizer$Form): Bool & Pure;
         try {
             let nform1 = marshal(nform);
-            isNormalized(src as ##java.lang.CharSequence, nform1)
+            isNormalized(src as ##java.lang.CharSequence, nform1) |> Ok
         } catch {
-            case _:##java.lang.Exception => false
+            case ex: ##java.lang.Exception =>
+                import java.lang.Throwable.getMessage(): String & Pure;
+                Err(getMessage(ex))
         }
-
 }
