@@ -19,7 +19,7 @@ namespace Interop/Text {
     ///
     /// Represents a Collator.
     ///
-    pub enum Collator(##java.text.Collator)
+    pub enum Collator[_: Region](##java.text.Collator)
     
 }
 
@@ -93,16 +93,16 @@ namespace Interop/Text/Collator {
     ///
     /// Uses a Collator to be accurate with the locale of the JVM.
     ///
-    pub def getInstance(): Collator & Impure =
-        import static java.text.Collator.getInstance(): ##java.text.Collator & Impure;
+    pub def getInstance(_: Region[r]): Collator[r] \ {Write(r), IO} =
+        import static java.text.Collator.getInstance(): ##java.text.Collator \ {r, IO};
         Collator(getInstance())
 
     /// TODO: Move to Locale?
-    pub def getInstanceWithLocale(locale: Interop/I18n.Locale): Collator =
-        import static java.text.Collator.getInstance(##java.util.Locale): ##java.text.Collator & Pure;
+    pub def getInstanceWithLocale(loc: Interop/I18n.Locale): Collator[r] \ Write(r) =
+        import static java.text.Collator.getInstance(##java.util.Locale): ##java.text.Collator & r;
         use Interop/I18n.Locale.{Locale};
-        let Locale(locale1) = locale;
-        Collator(getInstance(locale1))
+        let Locale(loc1) = loc;
+        Collator(getInstance(loc1))
 
     /// TODO - instance with decomposition and strength?
 
@@ -110,57 +110,49 @@ namespace Interop/Text/Collator {
     ///
     /// Test equality of strings `s1` and `s2` with the collator `x``.
     ///
-    pub def equalsWith(x: Collator, s1: String, s2: String): Bool =
-        import java.text.Collator.equals(String, String): Bool & Pure;
-        let Collator(x1) = x;
-        equals(x1, s1, s2)
+    pub def equals(s1: String, s2: String, col: Collator[r]): Bool \ Read(r) =
+        import java.text.Collator.equals(String, String): Bool & r;
+        let Collator(col1) = col;
+        equals(col1, s1, s2)
 
     ///
     /// Compare strings `s1` and `s2` with the collator `x``.
     ///
-    pub def compareWith(x: Collator, s1: String, s2: String): Comparison =
-        import java.text.Collator.compare(String, String): Int32 & Impure;
-        let Collator(x1) = x;
-        (compare(x1, s1, s2) as & Pure) |> Comparison.fromInt32
+    pub def compare(s1: String, s2: String, col: Collator[r]): Comparison \ Read(r) =
+        import java.text.Collator.compare(String, String): Int32 & r;
+        let Collator(col1) = col;
+        compare(col1, s1, s2) |> Comparison.fromInt32
 
 
 
-    pub def getDecomposition(x: Collator): DecompositionMode & Impure =
-        import java.text.Collator.getDecomposition(): Int32 & Impure;
-        let Collator(x1) = x;
-        unmarshallDecompositionMode(getDecomposition(x1))
+    pub def getDecomposition(col: Collator[r]): DecompositionMode \ Read(r) =
+        import java.text.Collator.getDecomposition(): Int32 & r;
+        let Collator(col1) = col;
+        getDecomposition(col1) |> unmarshallDecompositionMode
 
-    /// TODO - test cloning the Java objects and then get a pure API...
+    /// /// TODO - test cloning the Java objects and then get a pure API...
 
-    def clone(x: Collator): ##java.text.Collator & Impure =
-        import java.text.Collator.clone(): ##java.text.Collator & Impure;
-        let Collator(x1) = x;
-        clone(x1) as ##java.text.Collator
+    /// def clone(x: Collator): ##java.text.Collator & Impure =
+    ///     import java.text.Collator.clone(): ##java.text.Collator & Impure;
+    ///     let Collator(x1) = x;
+    ///     clone(x1) as ##java.text.Collator
 
-    pub def setDecomposition(x: Collator, mode: DecompositionMode): Collator =
-        import java.text.Collator.setDecomposition(Int32): Unit & Impure;
-        let body = () -> {
-            let x1 = clone(x);
-            let mode1 = marshallDecompositionMode(mode);
-            setDecomposition(x1, mode1);
-            x1
-        };
-        Collator(body() as & Pure)
+    pub def setDecomposition!(mode: DecompositionMode, col: Collator[r]): Unit \ Write(r) =
+        import java.text.Collator.setDecomposition(Int32): Unit & r;
+        let Collator(col1) = col;
+        let mode1 = marshallDecompositionMode(mode);
+        setDecomposition(col1, mode1)
 
+    pub def getStrength(col: Collator[r]): CollatorStrength \ Read(r) =
+        import java.text.Collator.getStrength(): Int32 & r;
+        let Collator(col1) = col;
+        getStrength(col1) |> unmarshallCollatorStrength
 
-    pub def getStrength(x: Collator): CollatorStrength & Impure =
-        import java.text.Collator.getStrength(): Int32 & Impure;
-        let Collator(x1) = x;
-        unmarshallCollatorStrength(getStrength(x1))
-
-    pub def setStrength(x: Collator, strength: CollatorStrength): Collator =
-        import java.text.Collator.setStrength(Int32): Unit & Impure;
-        let body = () -> {
-            let x1 = clone(x);
-            let strength1 = marshallCollatorStrength(strength);
-            setStrength(x1, strength1);
-            x1
-        };
-        Collator(body() as & Pure)
+    pub def setStrength!(strength: CollatorStrength, col: Collator[r]): Unit \ Write(r) =
+        import java.text.Collator.setStrength(Int32): Unit & r;
+        let Collator(col1) = col;
+        let strength1 = marshallCollatorStrength(strength);
+        setStrength(col1, strength1)
+        
 
 }
