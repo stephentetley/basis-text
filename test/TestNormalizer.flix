@@ -23,8 +23,8 @@ namespace TestNormalizer {
 
 @test
 def normalize01(): Bool =
-    use Interop/Text/Normalizer.NormalizerForm.{Nfd};
-    use Interop/Text/Normalizer.{normalize};
+    use Basis/Text/Normalizer.NormalizerForm.{Nfd};
+    use Basis/Text/Normalizer.{normalize};
     use String.{replaceMatches};
     let s1 = normalize(Nfd, "César") |> Result.getWithDefault("");
     // Remove combining marks...

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-namespace Interop/Text/NumberFormatter {
+namespace Basis/Text/NumberFormatter {
 
     ///
     /// Return a decimal representation of `x`.
